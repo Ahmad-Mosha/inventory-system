@@ -5,7 +5,7 @@ import "time"
 type Product struct {
     ID            int     `db:"id"`
     Name          string  `db:"name"`
-    Price         float64 `db:"price"`
+    Price         float64  `db:"price"`
     StockQuantity int     `db:"stock_quantity"`
 }
 
