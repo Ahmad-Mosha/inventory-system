@@ -8,8 +8,12 @@ import (
 )
 
 type ProductService interface {
-	RegisterProduct(p *models.Product) error
+	GetAll() ([]*models.Product, error)
+	GetByID(id int) (*models.Product, error)
+	Update(id int, p *models.Product) error
+	Delete(id int) error
 	SellProduct(id int, quantity int) error
+	RegisterProduct(p *models.Product) error
 }
 
 type productService struct {
@@ -18,6 +22,46 @@ type productService struct {
 
 func NewProductService(repo repository.ProductRepository) ProductService {
 	return &productService{repo: repo}
+}
+
+func (s *productService) GetAll() ([]*models.Product, error) {
+	result, err := s.repo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (s *productService) GetByID(id int) (*models.Product, error) {
+	result, err := s.repo.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (s *productService) Update(id int, p *models.Product) error {
+	existing, err := s.repo.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	if p.Name != "" {
+		existing.Name = p.Name
+	}
+
+	if p.Price > 0 {
+		existing.Price = p.Price
+	}
+
+	if p.StockQuantity > 0 {
+		existing.StockQuantity = p.StockQuantity
+	}
+
+	return s.repo.Update(id, existing)
+}
+func (s *productService) Delete(id int) error {
+	return s.repo.Delete(id)
 }
 
 func (s *productService) RegisterProduct(p *models.Product) error {
